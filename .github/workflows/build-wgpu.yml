@@ -6,7 +6,10 @@ on:
 env:
   WGPU_REF: v0.19.1.1
   ANDROID_MIN_SDK: "21"
-
+  
+permissions:
+  pull-requests: write
+  
 jobs:
   build-wgpu:
     name: ${{ matrix.name }}
