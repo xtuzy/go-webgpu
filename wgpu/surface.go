@@ -5,9 +5,16 @@ package wgpu
 #include <stdlib.h>
 #include "./lib/wgpu.h"
 
+static inline WGPUSurfaceTexture gowebgpu_surface_get_current_texture(WGPUSurface surface) {
+	WGPUSurfaceTexture ref;
+	wgpuSurfaceGetCurrentTexture(surface, &ref);
+	return ref;
+}
+
 */
 import "C"
 import (
+	"fmt"
 	"unsafe"
 )
 
@@ -24,6 +31,19 @@ type SurfaceCapabilities struct {
 	Formats      []TextureFormat
 	PresentModes []PresentMode
 	AlphaModes   []CompositeAlphaMode
+}
+
+func (p *Surface) GetCurrentTexture() (*Texture, error) {
+	ref := C.gowebgpu_surface_get_current_texture(p.ref)
+	if ref.status != C.WGPUSurfaceGetCurrentTextureStatus_Success {
+		return nil, &Error{
+			Type:    ErrorType_Validation,
+			Message: fmt.Sprintf("failed to get current texture: %d", ref.status),
+		}
+	}
+	return &Texture{
+		ref: ref.texture,
+	}, nil
 }
 
 func (p *Surface) GetCapabilities(adapter *Adapter) (ret SurfaceCapabilities) {
