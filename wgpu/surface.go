@@ -90,3 +90,7 @@ func (p *Surface) GetCapabilities(adapter *Adapter) (ret SurfaceCapabilities) {
 func (p *Surface) Release() {
 	C.wgpuSurfaceRelease(p.ref)
 }
+
+func (p *Surface) Present() {
+	C.wgpuSurfacePresent(p.ref)
+}
