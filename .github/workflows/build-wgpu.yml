@@ -121,14 +121,8 @@ jobs:
           set -ex
 
           declare -a arr=(
-              "android_amd64"
-              "android_386"
-              "android_arm"
-              "android_arm64"
               "darwin_amd64"
               "darwin_arm64"
-              "ios_amd64"
-              "ios_arm64"
               "linux_amd64"
               "windows_amd64")
 
