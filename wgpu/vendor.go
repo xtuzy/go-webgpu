@@ -1,5 +1,5 @@
 package wgpu
 
 import (
-	_ "github.com/rajveermalviya/go-webgpu/wgpu/lib"
+	_ "github.com/birdbrain-holdings/go-webgpu/wgpu/lib"
 )

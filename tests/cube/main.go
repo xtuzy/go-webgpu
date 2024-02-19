@@ -8,10 +8,10 @@ import (
 	"strings"
 	"unsafe"
 
+	"github.com/birdbrain-holdings/go-webgpu/tests/internal/glm"
+	"github.com/birdbrain-holdings/go-webgpu/wgpu"
+	wgpuext_glfw "github.com/birdbrain-holdings/go-webgpu/wgpuext/glfw"
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/rajveermalviya/go-webgpu/tests/internal/glm"
-	"github.com/rajveermalviya/go-webgpu/wgpu"
-	wgpuext_glfw "github.com/rajveermalviya/go-webgpu/wgpuext/glfw"
 
 	_ "embed"
 )
