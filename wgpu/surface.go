@@ -11,6 +11,10 @@ static inline WGPUSurfaceTexture gowebgpu_surface_get_current_texture(WGPUSurfac
 	return ref;
 }
 
+static inline void gowebgpu_surface_configure(WGPUSurface surface, WGPUSurfaceConfiguration descriptor) {
+	wgpuSurfaceConfigure(surface, &descriptor);
+}
+
 */
 import "C"
 import (
@@ -19,7 +23,8 @@ import (
 )
 
 type Surface struct {
-	ref C.WGPUSurface
+	ref       C.WGPUSurface
+	deviceRef C.WGPUDevice
 }
 
 func (p *Surface) GetPreferredFormat(adapter *Adapter) TextureFormat {
@@ -42,8 +47,39 @@ func (p *Surface) GetCurrentTexture() (*Texture, error) {
 		}
 	}
 	return &Texture{
-		ref: ref.texture,
+		ref:       ref.texture,
+		deviceRef: p.deviceRef,
 	}, nil
+}
+
+func (p *Surface) Configure(device *Device, config *SwapChainDescriptor) {
+	p.deviceRef = device.ref
+	var cfg C.WGPUSurfaceConfiguration
+	cfg.device = device.ref
+	cfg.format = C.WGPUTextureFormat(config.Format)
+	cfg.usage = C.uint32_t(config.Usage)
+	cfg.width = C.uint32_t(config.Width)
+	cfg.height = C.uint32_t(config.Height)
+	cfg.presentMode = C.WGPUPresentMode(config.PresentMode)
+
+	viewFormatCount := len(config.ViewFormats)
+	if viewFormatCount > 0 {
+		viewFormats := C.malloc(C.size_t(unsafe.Sizeof(C.WGPUTextureFormat(0))) * C.size_t(viewFormatCount))
+		defer C.free(viewFormats)
+
+		viewFormatsSlice := unsafe.Slice((*TextureFormat)(viewFormats), viewFormatCount)
+		copy(viewFormatsSlice, config.ViewFormats)
+
+		cfg.viewFormatCount = C.size_t(viewFormatCount)
+		cfg.viewFormats = (*C.WGPUTextureFormat)(viewFormats)
+	} else {
+		cfg.viewFormatCount = 0
+		cfg.viewFormats = nil
+	}
+	cfg.alphaMode = C.WGPUCompositeAlphaMode(config.AlphaMode)
+
+	C.gowebgpu_surface_configure(p.ref, cfg)
+
 }
 
 func (p *Surface) GetCapabilities(adapter *Adapter) (ret SurfaceCapabilities) {

@@ -186,7 +186,7 @@ func (p *Instance) CreateSurface(descriptor *SurfaceDescriptor) *Surface {
 	if ref == nil {
 		panic("Failed to acquire Surface")
 	}
-	return &Surface{ref}
+	return &Surface{ref, nil}
 }
 
 type requestAdapterCb func(status RequestAdapterStatus, adapter *Adapter, message string)
