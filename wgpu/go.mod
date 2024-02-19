@@ -1,3 +1,3 @@
-module github.com/rajveermalviya/go-webgpu/wgpu
+module github.com/birdbrain-holdings/go-webgpu/wgpu
 
 go 1.20
