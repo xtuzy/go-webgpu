@@ -1,3 +1,5 @@
+github.com/birdbrain-holdings/go-webgpu/wgpu v0.0.0-20240219144540-6046642b8f32 h1:6XMotYGI6EbgpjdQBUsaM9DMCNf6HaefvDbcXqcF6+0=
+github.com/birdbrain-holdings/go-webgpu/wgpu v0.0.0-20240219144540-6046642b8f32/go.mod h1:dUPYPwzRl3ZC0j8MK9KkqdEU0EavWUBphV8mRbqlo0c=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b h1:GgabKamyOYguHqHjSkDACcgoPIz3w0Dis/zJ1wyHHHU=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/rajveermalviya/go-webgpu/wgpu v0.17.1 h1:BlPsyVdDfTdDh50nZypBH5Qu+on03AJgiRs0Lt7TFaI=

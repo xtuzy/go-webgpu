@@ -1,4 +1,6 @@
-go 1.18
+go 1.20
+
+toolchain go1.21.4
 
 use (
 	./cmd/gen_enums
