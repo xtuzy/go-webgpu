@@ -1,5 +1,9 @@
+github.com/birdbrain-holdings/go-webgpu v1.0.0 h1:/EQ03T24bcpPo72xVbpHFuynKuKfIDOcMCG31viJir8=
+github.com/birdbrain-holdings/go-webgpu v1.0.0/go.mod h1:b+aOxfRthxG/SUfAg8mvm8ieEuRYvZrQ7cbqOHcskHk=
 github.com/birdbrain-holdings/go-webgpu/wgpu v0.0.0-20240219144540-6046642b8f32 h1:6XMotYGI6EbgpjdQBUsaM9DMCNf6HaefvDbcXqcF6+0=
 github.com/birdbrain-holdings/go-webgpu/wgpu v0.0.0-20240219144540-6046642b8f32/go.mod h1:dUPYPwzRl3ZC0j8MK9KkqdEU0EavWUBphV8mRbqlo0c=
+github.com/birdbrain-holdings/go-webgpu/wgpu v0.0.0-20240219150157-7203afcec6d1 h1:N+U44Cv2m2Sc/UrXVZGhDwdX3+lFx6YOuM6K9dwU2no=
+github.com/birdbrain-holdings/go-webgpu/wgpu v0.0.0-20240219150157-7203afcec6d1/go.mod h1:dUPYPwzRl3ZC0j8MK9KkqdEU0EavWUBphV8mRbqlo0c=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b h1:GgabKamyOYguHqHjSkDACcgoPIz3w0Dis/zJ1wyHHHU=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/rajveermalviya/go-webgpu/wgpu v0.17.1 h1:BlPsyVdDfTdDh50nZypBH5Qu+on03AJgiRs0Lt7TFaI=
