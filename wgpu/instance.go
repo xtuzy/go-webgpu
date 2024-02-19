@@ -142,7 +142,7 @@ func (p *Instance) CreateSurface(descriptor *SurfaceDescriptor) *Surface {
 			xlibWindow.chain.next = nil
 			xlibWindow.chain.sType = C.WGPUSType_SurfaceDescriptorFromXlibWindow
 			xlibWindow.display = descriptor.XlibWindow.Display
-			xlibWindow.window = C.uint32_t(descriptor.XlibWindow.Window)
+			xlibWindow.window = C.ulonglong(descriptor.XlibWindow.Window)
 
 			desc.nextInChain = (*C.WGPUChainedStruct)(unsafe.Pointer(xlibWindow))
 		}
@@ -219,7 +219,7 @@ func (p *Instance) RequestAdapter(options *RequestAdapterOptions) (*Adapter, err
 			opts.compatibleSurface = options.CompatibleSurface.ref
 		}
 		opts.powerPreference = C.WGPUPowerPreference(options.PowerPreference)
-		opts.forceFallbackAdapter = C.bool(options.ForceFallbackAdapter)
+		opts.forceFallbackAdapter = toBool(options.ForceFallbackAdapter)
 		opts.backendType = C.WGPUBackendType(options.BackendType)
 	}
 
@@ -304,10 +304,10 @@ func (p *Instance) GenerateReport() GlobalReport {
 	var r C.WGPUGlobalReport
 	C.wgpuGenerateReport(p.ref, &r)
 
-	mapStorageReport := func(creport C.WGPUStorageReport) StorageReport {
+	mapStorageReport := func(creport C.WGPURegistryReport) StorageReport {
 		return StorageReport{
-			NumOccupied: uint64(creport.numOccupied),
-			NumVacant:   uint64(creport.numVacant),
+			NumOccupied: uint64(creport.numAllocated),
+			NumVacant:   uint64(creport.numKeptFromUser),
 			NumError:    uint64(creport.numError),
 			ElementSize: uint64(creport.elementSize),
 		}
@@ -344,8 +344,6 @@ func (p *Instance) GenerateReport() GlobalReport {
 		report.Metal = mapHubReport(r.metal)
 	case C.WGPUBackendType_D3D12:
 		report.Dx12 = mapHubReport(r.dx12)
-	case C.WGPUBackendType_D3D11:
-		report.Dx11 = mapHubReport(r.dx11)
 	case C.WGPUBackendType_OpenGL:
 		report.Gl = mapHubReport(r.gl)
 	}

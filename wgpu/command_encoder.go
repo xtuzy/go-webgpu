@@ -204,11 +204,19 @@ func (p *CommandEncoder) BeginRenderPass(descriptor *RenderPassDescriptor) *Rend
 			depthStencilAttachment.depthLoadOp = C.WGPULoadOp(descriptor.DepthStencilAttachment.DepthLoadOp)
 			depthStencilAttachment.depthStoreOp = C.WGPUStoreOp(descriptor.DepthStencilAttachment.DepthStoreOp)
 			depthStencilAttachment.depthClearValue = C.float(descriptor.DepthStencilAttachment.DepthClearValue)
-			depthStencilAttachment.depthReadOnly = C.bool(descriptor.DepthStencilAttachment.DepthReadOnly)
+			dro := 0
+			if descriptor.DepthStencilAttachment.DepthReadOnly {
+				dro = 1
+			}
+			depthStencilAttachment.depthReadOnly = C.uint(dro)
 			depthStencilAttachment.stencilLoadOp = C.WGPULoadOp(descriptor.DepthStencilAttachment.StencilLoadOp)
 			depthStencilAttachment.stencilStoreOp = C.WGPUStoreOp(descriptor.DepthStencilAttachment.StencilStoreOp)
 			depthStencilAttachment.stencilClearValue = C.uint32_t(descriptor.DepthStencilAttachment.StencilClearValue)
-			depthStencilAttachment.stencilReadOnly = C.bool(descriptor.DepthStencilAttachment.DepthReadOnly)
+			sro := 0
+			if descriptor.DepthStencilAttachment.StencilReadOnly {
+				sro = 1
+			}
+			depthStencilAttachment.stencilReadOnly = C.uint(sro)
 
 			desc.depthStencilAttachment = depthStencilAttachment
 		}

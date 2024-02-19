@@ -79,7 +79,7 @@ func (p *Adapter) GetLimits() SupportedLimits {
 			MaxComputeWorkgroupSizeZ:                  uint32(limits.maxComputeWorkgroupSizeZ),
 			MaxComputeWorkgroupsPerDimension:          uint32(limits.maxComputeWorkgroupsPerDimension),
 
-			MaxPushConstantSize: uint32(extras.maxPushConstantSize),
+			MaxPushConstantSize: uint32(extras.limits.maxPushConstantSize),
 		},
 	}
 }
@@ -114,7 +114,7 @@ func (p *Adapter) GetProperties() AdapterProperties {
 
 func (p *Adapter) HasFeature(feature FeatureName) bool {
 	hasFeature := C.wgpuAdapterHasFeature(p.ref, C.WGPUFeatureName(feature))
-	return bool(hasFeature)
+	return bool(hasFeature != 0)
 }
 
 type requestDeviceCb func(status RequestDeviceStatus, device *Device, message string)
@@ -177,7 +177,7 @@ func (p *Adapter) RequestDevice(descriptor *DeviceDescriptor) (*Device, error) {
 			copy(requiredFeaturesSlice, descriptor.RequiredFeatures)
 
 			desc.requiredFeatures = (*C.WGPUFeatureName)(requiredFeatures)
-			desc.requiredFeaturesCount = C.size_t(requiredFeaturesCount)
+			desc.requiredFeatureCount = C.size_t(requiredFeaturesCount)
 		}
 
 		if descriptor.RequiredLimits != nil {
@@ -224,7 +224,7 @@ func (p *Adapter) RequestDevice(descriptor *DeviceDescriptor) (*Device, error) {
 
 			requiredLimitsExtras.chain.next = nil
 			requiredLimitsExtras.chain.sType = C.WGPUSType_RequiredLimitsExtras
-			requiredLimitsExtras.maxPushConstantSize = C.uint32_t(l.MaxPushConstantSize)
+			requiredLimitsExtras.limits.maxPushConstantSize = C.uint32_t(l.MaxPushConstantSize)
 
 			desc.requiredLimits.nextInChain = (*C.WGPUChainedStruct)(unsafe.Pointer(requiredLimitsExtras))
 		}

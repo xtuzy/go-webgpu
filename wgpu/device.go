@@ -238,6 +238,16 @@ type BindGroupLayoutDescriptor struct {
 	Entries []BindGroupLayoutEntry
 }
 
+func fromBool(c C.WGPUBool) bool {
+	return c != 0
+}
+
+func toBool(v bool) C.WGPUBool {
+	if v {
+		return 1
+	}
+	return 0
+}
 func (p *Device) CreateBindGroupLayout(descriptor *BindGroupLayoutDescriptor) (*BindGroupLayout, error) {
 	var desc C.WGPUBindGroupLayoutDescriptor
 
@@ -264,7 +274,7 @@ func (p *Device) CreateBindGroupLayout(descriptor *BindGroupLayoutDescriptor) (*
 					buffer: C.WGPUBufferBindingLayout{
 						nextInChain:      nil,
 						_type:            C.WGPUBufferBindingType(v.Buffer.Type),
-						hasDynamicOffset: C.bool(v.Buffer.HasDynamicOffset),
+						hasDynamicOffset: toBool(v.Buffer.HasDynamicOffset),
 						minBindingSize:   C.uint64_t(v.Buffer.MinBindingSize),
 					},
 					sampler: C.WGPUSamplerBindingLayout{
@@ -275,7 +285,7 @@ func (p *Device) CreateBindGroupLayout(descriptor *BindGroupLayoutDescriptor) (*
 						nextInChain:   nil,
 						sampleType:    C.WGPUTextureSampleType(v.Texture.SampleType),
 						viewDimension: C.WGPUTextureViewDimension(v.Texture.ViewDimension),
-						multisampled:  C.bool(v.Texture.Multisampled),
+						multisampled:  toBool(v.Texture.Multisampled),
 					},
 					storageTexture: C.WGPUStorageTextureBindingLayout{
 						nextInChain:   nil,
@@ -331,7 +341,7 @@ func (p *Device) CreateBuffer(descriptor *BufferDescriptor) (*Buffer, error) {
 
 		desc.usage = C.WGPUBufferUsageFlags(descriptor.Usage)
 		desc.size = C.uint64_t(descriptor.Size)
-		desc.mappedAtCreation = C.bool(descriptor.MappedAtCreation)
+		desc.mappedAtCreation = toBool(descriptor.MappedAtCreation)
 	}
 
 	var err error = nil
@@ -518,7 +528,7 @@ func (p *Device) CreatePipelineLayout(descriptor *PipelineLayoutDescriptor) (*Pi
 				}
 			}
 
-			pipelineLayoutExtras.pushConstantRangeCount = C.uint32_t(pushConstantRangeCount)
+			pipelineLayoutExtras.pushConstantRangeCount = C.ulong(pushConstantRangeCount)
 			pipelineLayoutExtras.pushConstantRanges = (*C.WGPUPushConstantRange)(pushConstantRanges)
 
 			desc.nextInChain = (*C.WGPUChainedStruct)(unsafe.Pointer(pipelineLayoutExtras))
@@ -566,18 +576,21 @@ func (p *Device) CreateQuerySet(descriptor *QuerySetDescriptor) (*QuerySet, erro
 
 		desc._type = C.WGPUQueryType(descriptor.Type)
 		desc.count = C.uint32_t(descriptor.Count)
+		// TODO
+		/*
+			pipelineStatisticsCount := len(descriptor.PipelineStatistics)
+			if pipelineStatisticsCount > 0 {
+				pipelineStatistics := C.malloc(C.size_t(pipelineStatisticsCount) * C.size_t(unsafe.Sizeof(C.WGPUPipelineStatisticName(0))))
+				defer C.free(pipelineStatistics)
 
-		pipelineStatisticsCount := len(descriptor.PipelineStatistics)
-		if pipelineStatisticsCount > 0 {
-			pipelineStatistics := C.malloc(C.size_t(pipelineStatisticsCount) * C.size_t(unsafe.Sizeof(C.WGPUPipelineStatisticName(0))))
-			defer C.free(pipelineStatistics)
+				pipelineStatisticsSlice := unsafe.Slice((*PipelineStatisticName)(pipelineStatistics), pipelineStatisticsCount)
+				copy(pipelineStatisticsSlice, descriptor.PipelineStatistics)
 
-			pipelineStatisticsSlice := unsafe.Slice((*PipelineStatisticName)(pipelineStatistics), pipelineStatisticsCount)
-			copy(pipelineStatisticsSlice, descriptor.PipelineStatistics)
-
-			desc.pipelineStatisticsCount = C.size_t(pipelineStatisticsCount)
-			desc.pipelineStatistics = (*C.WGPUPipelineStatisticName)(pipelineStatistics)
-		}
+				desc.count = C.uint32_t(pipelineStatisticsCount)
+				desc.nextInChain = (*C.WGPUPipelineStatisticName)(pipelineStatistics)
+				desc.pipelineStatisticsCount = C.size_t(pipelineStatisticsCount)
+				desc.pipelineStatistics = (*C.WGPUPipelineStatisticName)(pipelineStatistics)
+			}*/
 	}
 
 	var err error = nil
@@ -627,14 +640,14 @@ func (p *Device) CreateRenderBundleEncoder(descriptor *RenderBundleEncoderDescri
 			colorFormatsSlice := unsafe.Slice((*TextureFormat)(colorFormats), colorFormatsCount)
 			copy(colorFormatsSlice, descriptor.ColorFormats)
 
-			desc.colorFormatsCount = C.size_t(colorFormatsCount)
+			desc.colorFormatCount = C.size_t(colorFormatsCount)
 			desc.colorFormats = (*C.WGPUTextureFormat)(colorFormats)
 		}
 
 		desc.depthStencilFormat = C.WGPUTextureFormat(descriptor.DepthStencilFormat)
 		desc.sampleCount = C.uint32_t(descriptor.SampleCount)
-		desc.depthReadOnly = C.bool(descriptor.DepthReadOnly)
-		desc.stencilReadOnly = C.bool(descriptor.StencilReadOnly)
+		desc.depthReadOnly = toBool(descriptor.DepthReadOnly)
+		desc.stencilReadOnly = toBool(descriptor.StencilReadOnly)
 	}
 
 	ref := C.wgpuDeviceCreateRenderBundleEncoder(p.ref, &desc)
@@ -821,7 +834,7 @@ func (p *Device) CreateRenderPipeline(descriptor *RenderPipelineDescriptor) (*Re
 
 			ds.nextInChain = nil
 			ds.format = C.WGPUTextureFormat(depthStencil.Format)
-			ds.depthWriteEnabled = C.bool(depthStencil.DepthWriteEnabled)
+			ds.depthWriteEnabled = toBool(depthStencil.DepthWriteEnabled)
 			ds.depthCompare = C.WGPUCompareFunction(depthStencil.DepthCompare)
 			ds.stencilFront = C.WGPUStencilFaceState{
 				compare:     C.WGPUCompareFunction(depthStencil.StencilFront.Compare),
@@ -847,7 +860,7 @@ func (p *Device) CreateRenderPipeline(descriptor *RenderPipelineDescriptor) (*Re
 		desc.multisample = C.WGPUMultisampleState{
 			count:                  C.uint32_t(descriptor.Multisample.Count),
 			mask:                   C.uint32_t(descriptor.Multisample.Mask),
-			alphaToCoverageEnabled: C.bool(descriptor.Multisample.AlphaToCoverageEnabled),
+			alphaToCoverageEnabled: toBool(descriptor.Multisample.AlphaToCoverageEnabled),
 		}
 
 		if descriptor.Fragment != nil {
@@ -1143,49 +1156,6 @@ type SwapChainDescriptor struct {
 	ViewFormats []TextureFormat
 }
 
-func (p *Device) CreateSwapChain(surface *Surface, descriptor *SwapChainDescriptor) (*SwapChain, error) {
-	var desc C.WGPUSwapChainDescriptor
-
-	if descriptor != nil {
-		desc = C.WGPUSwapChainDescriptor{
-			usage:       C.WGPUTextureUsageFlags(descriptor.Usage),
-			format:      C.WGPUTextureFormat(descriptor.Format),
-			width:       C.uint32_t(descriptor.Width),
-			height:      C.uint32_t(descriptor.Height),
-			presentMode: C.WGPUPresentMode(descriptor.PresentMode),
-		}
-
-		extras := (*C.WGPUSwapChainDescriptorExtras)(C.malloc(C.size_t(unsafe.Sizeof(C.WGPUSwapChainDescriptorExtras{}))))
-		defer C.free(unsafe.Pointer(extras))
-
-		extras.chain.next = nil
-		extras.chain.sType = C.WGPUSType_SwapChainDescriptorExtras
-
-		extras.alphaMode = C.WGPUCompositeAlphaMode(descriptor.AlphaMode)
-
-		viewFormatCount := len(descriptor.ViewFormats)
-		if viewFormatCount > 0 {
-			viewFormats := C.malloc(C.size_t(unsafe.Sizeof(C.WGPUTextureFormat(0))) * C.size_t(viewFormatCount))
-			defer C.free(viewFormats)
-
-			viewFormatsSlice := unsafe.Slice((*TextureFormat)(viewFormats), viewFormatCount)
-			copy(viewFormatsSlice, descriptor.ViewFormats)
-
-			extras.viewFormatCount = C.size_t(viewFormatCount)
-			extras.viewFormats = (*C.WGPUTextureFormat)(viewFormats)
-		} else {
-			extras.viewFormatCount = 0
-			extras.viewFormats = nil
-		}
-
-		desc.nextInChain = (*C.WGPUChainedStruct)(unsafe.Pointer(extras))
-	}
-
-	ref := C.wgpuDeviceCreateSwapChain(p.ref, surface.ref, &desc)
-	C.wgpuDeviceReference(p.ref)
-	return &SwapChain{deviceRef: p.ref, ref: ref}, nil
-}
-
 type TextureDescriptor struct {
 	Label         string
 	Usage         TextureUsage
@@ -1296,7 +1266,7 @@ func (p *Device) GetLimits() SupportedLimits {
 			MaxComputeWorkgroupSizeZ:                  uint32(limits.maxComputeWorkgroupSizeZ),
 			MaxComputeWorkgroupsPerDimension:          uint32(limits.maxComputeWorkgroupsPerDimension),
 
-			MaxPushConstantSize: uint32(extras.maxPushConstantSize),
+			MaxPushConstantSize: uint32(extras.limits.maxPushConstantSize),
 		},
 	}
 }
@@ -1309,7 +1279,7 @@ func (p *Device) GetQueue() *Queue {
 
 func (p *Device) HasFeature(feature FeatureName) bool {
 	hasFeature := C.wgpuDeviceHasFeature(p.ref, C.WGPUFeatureName(feature))
-	return bool(hasFeature)
+	return fromBool(hasFeature)
 }
 
 type WrappedSubmissionIndex struct {
@@ -1326,5 +1296,5 @@ func (p *Device) Poll(wait bool, wrappedSubmissionIndex *WrappedSubmissionIndex)
 		}
 	}
 
-	return bool(C.wgpuDevicePoll(p.ref, C.bool(wait), index))
+	return fromBool(C.wgpuDevicePoll(p.ref, toBool(wait), index))
 }
