@@ -26,27 +26,20 @@ jobs:
             target: x86_64-unknown-linux-gnu
             goos: linux
             goarch: amd64
-
-          - name: build - windows/amd64
-            os: windows-2019
-            target: x86_64-pc-windows-gnu
-            goos: windows
+            
+          - name: build - android/amd64
+            os: ubuntu-22.04
+            target: x86_64-linux-android
+            goos: android
             goarch: amd64
             setup_env: |
-              choco install -y --force llvm | exit 0
-              echo "LIBCLANG_PATH=C:\Program Files\LLVM\lib" >> $GITHUB_ENV
+              set -x
+              export CC=$ANDROID_NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android$ANDROID_MIN_SDK-clang
 
-          - name: build - darwin/amd64
-            os: macos-11
-            target: x86_64-apple-darwin
-            goos: darwin
-            goarch: amd64
-
-          - name: build - darwin/arm64
-            os: macos-11
-            target: aarch64-apple-darwin
-            goos: darwin
-            goarch: arm64
+              echo "CC=$CC" >> $GITHUB_ENV
+              echo "CXX=$CC++" >> $GITHUB_ENV
+              echo "CLANG_PATH=$CC" >> $GITHUB_ENV
+              echo "CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER=$CC" >> $GITHUB_ENV
 
     steps:
       # Checkout
@@ -125,10 +118,8 @@ jobs:
           set -ex
 
           declare -a arr=(
-              "darwin_amd64"
-              "darwin_arm64"
               "linux_amd64"
-              "windows_amd64")
+              "android_amd64")
 
           for i in "${arr[@]}"
           do
