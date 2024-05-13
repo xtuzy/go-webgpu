@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  WGPU_REF: v0.19.1.1
+  WGPU_REF: v0.19.3.1
   ANDROID_MIN_SDK: "21"
   
 permissions:
